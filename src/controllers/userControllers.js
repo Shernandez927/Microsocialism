@@ -32,6 +32,23 @@ module.exports = {
       });
   },
 
+  // PUT Update on current user
+  updateUser(req, res) {
+    User.findOneAndUpdate(
+      { _id: req.params.userId },
+      { $set: req.body },
+      { runValidators: true, new: true }
+    )
+      .then((user) =>
+        !user
+          ? res
+              .status(404)
+              .json({ message: "Cannot find user with that ID! 🚫" })
+          : res.json(user)
+      )
+      .catch((err) => res.status(500).json(err));
+  },
+
   // DELETE User by ID and User's Thoughts
   deleteUser(req, res) {
     User.findByIdAndDelete({ _id: req.params.userId })
@@ -66,7 +83,7 @@ module.exports = {
   },
 
   // DELETE friend from User
-  removeFriend(req, res) {
+  deleteFriend(req, res) {
     User.findOneAndUpdate(
       { _id: req.params.userId },
       { $pull: { friend: { friendId: req.params.friendId } } },
